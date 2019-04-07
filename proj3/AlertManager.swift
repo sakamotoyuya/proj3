@@ -32,6 +32,23 @@ class AlertManager: NSObject {
         ac.addAction(ok)
         vc.present(ac, animated: true)
     }
+    
+    func presenta(_ vc:UIViewController,completion handler:((UIAlertController)->())?){
+        
+        //UIAlertControllerを生成
+        let ac = UIAlertController(title: "タイトル", message: "メッセージ", preferredStyle: .alert)
+        
+        //UIAlertActionを生成
+        let action = UIAlertAction(title: "OK",style: .default){(_)in
+            //内部でacを参照しているため循環参照する。なぜこうなるのか追ってみる。
+            handler?(ac)
+        }
+        print(ac.actions)
+        //acにアクションを登録
+        ac.addAction(action)//ここでメモリリーク
+        print(ac.actions)
+        //vc.present(ac, animated: true)
+    }
     deinit{
         print("AlertManagerが解放されました。")
     }

@@ -2,55 +2,54 @@
 //  ViewController.swift
 //  proj3
 //
-//  Created by sakamotoyuya on 2019/04/04.
+//  Created by sakamotoyuya on 2019/04/05.
 //  Copyright © 2019 sakamotoyuya. All rights reserved.
 //
 
 import UIKit
 
-//UIAlertControllerを操作してなぜ循環参照してしまうのか追ってみるための操作クラス
 class ViewController: UIViewController {
-    var am:AlertManager? = AlertManager()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    @IBAction func alerthyouji(_ sender: Any) {
-        /*
-         AlertManager内のテキスト変更イベントがフックしなかった。
-         なぜなのか図解すること。
-         */
-
-        //alert()
-        
-        /*
-         これならテキスト変更イベントがフックされた。
-         もしかしてAlertManager自体が上記だと
-         メモリ解放されてしまっているため
-         delegate = self でselfが解放されてしまっているのではないだろうか・・・
-         */
-        am?.present(self,"初期値"){(text:String?)in
-            if(text == "初期値"){
-                self.alerthyouji(sender)
-            }
-        }
+        // Do any additional setup after loading the view.
     }
     
-    func alert(){
-        let al = AlertManager()
-        al.present(self,"test"){(_)in
-            print("testアラートのOKタップ後の処理")
+    @IBAction func call(_ sender: Any) {
+        call()
+//        calltest()
+        
+    }
+    func call(){
+        
+        //(1)UIAlertControllerを生成する
+        let ac = UIAlertController(title: "タイトル", message: "メッセージ", preferredStyle: .alert)
+        
+        //(2)UIAlertActionを生成を生成する
+        let action = UIAlertAction(title: "OK",style: .default){(_)in
+            
+            //(3)クロージャー内でacを参照する
+            print(ac)
         }
+        
+        //(4)acのプロパティactionsにactionを追加する
+        ac.addAction(action)//ここでメモリリークする
+        
+        //acを表示
+        present(ac, animated: true)
+    }
+    
+    func calltest(){
+        let cc = AlertController()
+        let ca = AlertAction{(_)in
+            print(cc)
+        }
+        cc.addClosure(ca)
     }
     
     @IBAction func kaihou1(_ sender: Any) {
-        am = nil
     }
-    
-    @IBAction func saiseisei(_ sender: Any) {
-        am = AlertManager()
-    }
-    
-}
 
+    @IBAction func saiseisei(_ sender: Any) {
+    }
+}
